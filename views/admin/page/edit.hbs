@@ -1,0 +1,27 @@
+
+<h1 class="display-4">Data editing</h1>
+{{# if errors }}
+	{{# each errors }}
+		<p class="alert alert-danger">{{this.param}} - {{ this.msg }}</p>
+	{{/each}}
+{{/if}}
+<form action="/admin/pages/{{page.id}}/edit" method="POST">
+	<div class="form-group">
+		<label for="name">Title</label>
+			<input class="form-control" name="name" value="{{page.name}}" id="name" type="text">
+	</div>
+	<div class="form-group">
+		<label for="slug">Url slug</label>
+		<input class="form-control" name="slug" value="{{page.slug}}" id="slug" type="text">
+	</div>
+	<div class="form-group">
+		<label for="slug">Meta description</label>
+		<input class="form-control" name="slug" value="{{page.meta}}" id="slug" type="text">
+	</div>
+		<div class="form-group">
+			<label for="content"></label><textarea  name="content" id="content" type="text">{{page.content}}</textarea>
+		</div>
+	<a  class="nav-link" href="/admin/pages">To pages list</a>
+	<button class="btn btn-primary" type="submit" name="action">Submit</button>
+</form>
+
