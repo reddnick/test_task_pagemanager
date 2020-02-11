@@ -2,8 +2,6 @@ const {PageModel} = require('../bin/sequelize');
 const express = require('express');
 const router = express.Router();
 const auth = require('../services/auth.service');
-const {check, validationResult} = require('express-validator');
-
 
 router.get('/pages', auth.jwt, function (req, res) {
     PageModel.findAll()
@@ -14,38 +12,40 @@ router.get('/pages', auth.jwt, function (req, res) {
 router.get('/pages/create', auth.jwt, function (req, res) {
     res.render('admin/page/create.hbs')
 });
-router.post('/pages/create', auth.jwt, [
-    check('name').isString().notEmpty(),
-    check('slug').isString().notEmpty(),
-    check('content').isString().notEmpty(),
-], function (req, res) {
-    PageModel.create(req.body)
-        .then(() => res.redirect('/admin/pages'))
+
+router.post('/pages/create', auth.jwt, async function (req, res) {
+    const page = await PageModel.findOne({where: {slug: req.body.slug}});
+    if(!page) {
+       PageModel.create(req.body).then(() => res.redirect('/admin/pages'))
+    } else {
+        res.status(409).render('error.hbs', {error: {message: 'Error: slug should be uniq'}})
+    }
 });
 
-
-router.get('/pages/:id/edit', auth.jwt, function (req, res) {
+router.get('/pages/:slug/edit', auth.jwt, function (req, res) {
     PageModel.findOne({
-        where: {id: req.params.id}
+        where: {slug: req.params.slug}
     })
         .then((page) => res.render('admin/page/edit', {page}))
 });
 
-router.post('/pages/:id/edit', auth.jwt, [
-    check('name').isString().notEmpty(),
-    check('slug').isString().notEmpty(),
-    check('content').isString().notEmpty(),
-], async function (req, res) {
-    const page = await PageModel.findByPk(req.params.id);
-    const errors = validationResult(req);
-    if (errors.isEmpty()) {
-        await PageModel.update(req.body, {
-            returning: true,
-            where: {id: req.params.id}
-        });
-        res.redirect('/admin/pages')
+router.post('/pages/:slug/edit', auth.jwt, async function (req, res) {
+
+    const page = await PageModel.findOne({where: {slug: req.body.slug}});
+    if (page) {
+        PageModel.update({
+                name: req.body.name,
+                meta: req.body.meta,
+                content: req.body.content
+            },
+            {
+                where: {slug: req.body.slug}
+            })
+            .then(() => res.redirect('/admin/pages'));
+    } else {
+        PageModel.create(req.body)
+            .then(() => res.redirect('/admin/pages'));
     }
-    res.render('admin/page/edit', {page, errors: errors.array()})
 });
 
 router.post('/pages/:id/delete', auth.jwt, function (req, res) {
