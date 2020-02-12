@@ -6,16 +6,16 @@
 <body>
 <div>
 	<h1 class="display-4">Registration</h1>
-	<form  id="register" name="register" method="post" action="/security/register">
+	<form id="register" name="register" method="post" action="/security/register">
 		{{# if error }}
 			<p class="alert alert-danger">{{ this.error }}</p>
 		{{/if}}
 		<div class="form-group">
-			<label for="username" >Username</label>
+			<label for="username">Username</label>
 			{{# if username }}
 				<input class="form-control" name="username" id="username" type="username" value="{{this.username}}">
 			{{else}}
-			<input class="form-control" name="username" id="username" type="username">
+				<input class="form-control" name="username" id="username" type="username">
 			{{/if}}
 		</div>
 		<div class="form-group">
