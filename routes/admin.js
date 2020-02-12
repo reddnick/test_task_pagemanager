@@ -38,7 +38,14 @@ router.post('/pages/:id/edit', auth.jwt, async function (req, res) {
         })
             .then(() => res.redirect('/admin/pages'));
     } else {
-        let page = req.body;
+        let page = {
+            id: req.params.id,
+            name: req.body.name,
+            title: req.body.title,
+            slug: req.body.slug,
+            meta: req.body.meta,
+            content: req.body.content,
+        };
         res.render('admin/page/edit', {page, error: 'Slug already exist(must be unique)'})
     }
 });
