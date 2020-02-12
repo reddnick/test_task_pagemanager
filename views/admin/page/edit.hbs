@@ -6,6 +6,9 @@
 			<input class="form-control" name="name" value="{{page.name}}" id="name" type="text" required="required">
 	</div>
 	<div class="form-group">
+		{{# if error }}
+			<p class="alert alert-danger">{{ this.error }}</p>
+		{{/if}}
 		<label for="slug">Url slug</label>
 		<input class="form-control" name="slug" value="{{page.slug}}" id="slug" type="text" pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" required="required">
 		<small id="emailHelp" class="form-text text-muted">Slug should be without spaces, unique, lowercase  </small>

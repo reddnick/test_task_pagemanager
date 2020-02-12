@@ -18,35 +18,34 @@ router.post('/pages/create', auth.jwt, async function (req, res) {
     if(!page) {
        PageModel.create(req.body).then(() => res.redirect('/admin/pages'))
     } else {
-        res.status(409).render('error.hbs', {error: {message: 'Error: slug should be uniq'}})
+        let currPage = req.body;
+        res.render('admin/page/create',   {currPage, error: 'Slug already exist(must be unique)'})
     }
 });
 
-router.get('/pages/:slug/edit', auth.jwt, function (req, res) {
+router.get('/pages/:id/edit', auth.jwt, function (req, res) {
     PageModel.findOne({
-        where: {slug: req.params.slug}
+        where: {id: req.params.id}
     })
         .then((page) => res.render('admin/page/edit', {page}))
 });
 
-router.post('/pages/:slug/edit', auth.jwt, async function (req, res) {
-
-    const page = await PageModel.findOne({where: {slug: req.body.slug}});
-    if (page) {
-        PageModel.update({
-                name: req.body.name,
-                meta: req.body.meta,
-                content: req.body.content
-            },
-            {
-                where: {slug: req.body.slug}
-            })
-            .then(() => res.redirect('/admin/pages'));
-    } else {
-        PageModel.create(req.body)
+router.post('/pages/:id/edit', auth.jwt, async function (req, res) {
+    const existSlug = await PageModel.findOne({where: {slug: req.body.slug}});
+    const currentSlug = await PageModel.findOne({where: {id: req.params.id}});
+    if(!existSlug || existSlug.slug === currentSlug.slug) {
+        PageModel.update(req.body, {
+            where: {id: req.params.id}
+        })
             .then(() => res.redirect('/admin/pages'));
     }
+    else {
+        let page = req.body;
+        res.render('admin/page/edit',   {page, error: 'Slug already exist(must be unique)'})
+        }
 });
+
+
 
 router.post('/pages/:id/delete', auth.jwt, function (req, res) {
     PageModel.destroy({

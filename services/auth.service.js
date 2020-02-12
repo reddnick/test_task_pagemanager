@@ -5,6 +5,7 @@ module.exports = {
     session: false
   }),
   local : passport.authenticate('local', {
-    session: false
+    session: false,
+    failWithError: true
   })
 };

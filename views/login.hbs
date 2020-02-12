@@ -7,6 +7,9 @@
 <h1 class="display-4">Login</h1>
 	<div>
 		<form  id="login" name="login" method="post" action="/security/login">
+			{{# if error }}
+				<p class="alert alert-danger">{{ this.error }}</p>
+			{{/if}}
 			<div class="form-group">
 					<label for="username" >Username</label>
 					<input class="form-control" name="username" id="username" type="username">
